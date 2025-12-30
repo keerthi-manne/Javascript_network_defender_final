@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Topology Verification</title>
+    <style>
+        body {
+            background: #1a1d2e;
+            color: #fff;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            border: 2px solid #555;
+            background: #222;
+            margin-top: 20px;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #4c9eff;
+            border: none;
+            color: white;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background: #357abd;
+        }
+
+        #info {
+            margin-top: 10px;
+            font-size: 18px;
+            color: #aaa;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Topology Generator Verification</h1>
+    <div class="controls">
+        <button onclick="testTopology('AGGRESSIVE', [])">Test Aggressive (Direct)</button>
+        <button onclick="testTopology('DEFENSIVE', [{type:'Firewall'}, {type:'Firewall'}])">Test Defensive (vs
+            Firewall)</button>
+        <button onclick="testTopology('DEFENSIVE', [{type:'IDS'}])">Test Defensive (vs IDS)</button>
+        <button onclick="testTopology('BALANCED', [])">Test Balanced</button>
+    </div>
+    <div id="info">Select a test case...</div>
+    <canvas id="gameCanvas" width="1200" height="700"></canvas>
+
+    <script type="module">
+        import { EconomicRL } from './js/ai/EconomicRL.js';
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const info = document.getElementById('info');
+
+        // Mock LevelManager
+        const mockManager = {
+            credits: 1500,
+            level: { startingCredits: 1500 }
+        };
+
+        const ai = new EconomicRL(mockManager);
+
+        window.testTopology = (action, towers) => {
+            ai.currentAction = action;
+            const topo = ai.generateDynamicTopology(towers);
+
+            info.innerHTML = `Action: <b>${action}</b> | Reason: <em>${topo.aiReasoning}</em>`;
+
+            // Draw
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw edges
+            ctx.strokeStyle = '#555';
+            ctx.lineWidth = 2;
+            topo.edges.forEach(edge => {
+                const u = topo.nodes.find(n => n.id === edge[0]);
+                const v = topo.nodes.find(n => n.id === edge[1]);
+                if (u && v) {
+                    ctx.beginPath();
+                    ctx.moveTo(u.x, u.y);
+                    ctx.lineTo(v.x, v.y);
+                    ctx.stroke();
+                }
+            });
+
+            // Draw nodes
+            topo.nodes.forEach(node => {
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 15, 0, Math.PI * 2);
+                if (node.type === 'source') ctx.fillStyle = '#6fba82';
+                else if (node.type === 'goal') ctx.fillStyle = '#d86c6c';
+                else if (node.type === 'chokepoint') ctx.fillStyle = '#e8a75e';
+                else ctx.fillStyle = '#4a5568';
+                ctx.fill();
+
+                // Label
+                ctx.fillStyle = '#fff';
+                ctx.font = '10px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(node.id, node.x, node.y);
+            });
+        };
+    </script>
+</body>
+
+</html>

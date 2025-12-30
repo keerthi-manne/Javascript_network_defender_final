@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+.venv
+venv/
+ENV/
+env/
+.env
+
+# JavaScript / Node
+node_modules/
+npm-debug.log
+yarn-error.log
+*.log
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+.vs/
+
+# Project Specific Data
+ai_learning_data.json
+ai_data.json
+*.sqlite3

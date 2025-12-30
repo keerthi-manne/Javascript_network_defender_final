@@ -1,0 +1,42 @@
+/* AI Tip Display */
+.ai-tip {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 500px;
+    padding: 16px 24px;
+    background: rgba(10, 14, 39, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--accent-primary);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(76, 158, 255, 0.4);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.5;
+    z-index: 100;
+    animation: slideInUp 0.3s ease, fadeOut 0.5s ease 7.5s forwards;
+    pointer-events: none;
+}
+
+.ai-tip::before {
+    content: '🤖';
+    font-size: 18px;
+    margin-right: 8px;
+}
+
+.ai-tip.hidden {
+    display: none;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}

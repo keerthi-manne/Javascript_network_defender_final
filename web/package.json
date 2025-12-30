@@ -1,0 +1,22 @@
+{
+  "name": "network-defender",
+  "version": "1.0.0",
+  "description": "AI-powered Tower Defense game teaching network security concepts",
+  "main": "index.html",
+  "scripts": {
+    "dev": "http-server -p 8080 -c-1",
+    "start": "npm run dev"
+  },
+  "keywords": [
+    "game",
+    "tower-defense",
+    "network-security",
+    "cybersecurity",
+    "education"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

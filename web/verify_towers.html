@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tower Logic Verification</title>
+    <style>
+        body {
+            background: #1a1d2e;
+            color: #fff;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            border: 2px solid #555;
+            background: #222;
+            margin-top: 20px;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #4c9eff;
+            border: none;
+            color: white;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background: #357abd;
+        }
+
+        #log {
+            margin-top: 10px;
+            font-family: monospace;
+            color: #aaa;
+            background: #111;
+            padding: 10px;
+            width: 600px;
+            height: 100px;
+            overflow-y: scroll;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Tower Mechanic Verification</h1>
+    <div class="controls">
+        <button onclick="startTest()">Start Test Simulation</button>
+    </div>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <div id="log">Logs will appear here...</div>
+
+    <script type="module">
+        import Enemy from './js/entities/Enemy.js';
+        import Projectile from './js/entities/Projectile.js';
+        import Config from './js/utils/Config.js';
+        import Graphics from './js/utils/Graphics.js';
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const logPanel = document.getElementById('log');
+
+        function log(msg) {
+            logPanel.innerHTML += `<div>${msg}</div>`;
+            logPanel.scrollTop = logPanel.scrollHeight;
+            console.log(msg);
+        }
+
+        // Setup Mock Environment
+        const nodes = [
+            { x: 50, y: 200 }, { x: 750, y: 200 }
+        ];
+
+        // 1. Test Subject: STEALTH Enemy
+        const enemy = new Enemy('STEALTH', [0, 1], nodes);
+        enemy.x = 100; // Start a bit in
+
+        // 2. Projectiles
+        const projectiles = [];
+
+        // Loop
+        let lastTime = performance.now();
+        let testPhase = 0; // 0: Normal, 1: Hit by IDS (Slow+Reveal), 2: Hit by Honeypot (Distract)
+
+        function gameLoop(time) {
+            const deltaTime = time - lastTime;
+            lastTime = time;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Nodes
+            nodes.forEach(n => Graphics.drawCircle(ctx, n.x, n.y, 10, '#555'));
+
+            // Update Enemy
+            enemy.update(deltaTime);
+            enemy.render(ctx);
+
+            // Visual Indicators for Test
+            ctx.fillStyle = 'white';
+            ctx.fillText(`State: ${testPhase === 0 ? 'Normal' : testPhase === 1 ? 'Slowed & Revealed' : 'Distracted'}`, 10, 20);
+            ctx.fillText(`Speed: ${enemy.speed * enemy.slowFactor}`, 10, 40);
+            ctx.fillText(`Distraction Timer: ${enemy.distractionTimer.toFixed(0)}`, 10, 60);
+            ctx.fillText(`Revealed: ${enemy.revealed}`, 10, 80);
+
+            // Test Script
+            if (testPhase === 0 && enemy.x > 200) {
+                log('PHASE 1: Firing IDS Projectile (Expect Slow + Reveal)');
+                // Simulate IDS Hit
+                const proj = new Projectile(400, 100, enemy, 0, 10, 'yellow', 'slow', 0.5, 3000); // 3s slow
+                proj.hitTarget();
+                if (enemy.revealed) log('SUCCESS: Enemy Revealed!');
+                if (enemy.slowFactor < 1.0) log('SUCCESS: Enemy Slowed!');
+                testPhase = 1;
+            }
+
+            if (testPhase === 1 && enemy.x > 350) {
+                log('PHASE 2: Firing Honeypot Projectile (Expect Stop)');
+                // Simulate Honeypot Hit
+                const proj = new Projectile(400, 300, enemy, 0, 10, 'cyan', 'attract', 1.0, 2000); // 2s distract
+                proj.hitTarget();
+                if (enemy.distractionTimer > 0) log('SUCCESS: Enemy Distracted!');
+                testPhase = 2;
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        window.startTest = () => {
+            log('Starting verification simulation...');
+            requestAnimationFrame(gameLoop);
+        };
+    </script>
+</body>
+
+</html>
