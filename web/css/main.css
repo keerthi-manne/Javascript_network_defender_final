@@ -207,9 +207,12 @@ body {
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    padding-left: 260px; /* Space for left sidebar */
-    padding-right: 260px; /* Space for right sidebar */
-    padding-top: 80px; /* Space for top bar */
+    padding-left: 280px;
+    /* Space for left sidebar */
+    padding-right: 280px;
+    /* Space for right sidebar */
+    padding-top: 80px;
+    /* Space for top bar */
     box-sizing: border-box;
 }
 

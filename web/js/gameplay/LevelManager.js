@@ -257,8 +257,10 @@ export class LevelManager {
      * Get defense rating (stars)
      */
     getDefenseRating() {
-        const successRate = this.calculateSuccessRate();
+        // User Request: If they win (survive), they get 3 stars regardless of health/success %
+        if (this.coreHealth > 0) return 3;
 
+        const successRate = this.calculateSuccessRate();
         if (successRate >= 85) return 3;
         if (successRate >= 70) return 2;
         if (successRate >= 55) return 1;

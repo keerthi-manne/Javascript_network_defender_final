@@ -63,15 +63,10 @@ export class Enemy {
         // Update Status Effects
         if (this.attractionTimer > 0) {
             this.attractionTimer -= deltaTime;
-            // Apply slow when attracted
-            this.slowFactor = 0.5;
+            // User requested NO slow down when attracted
+            // this.slowFactor = 0.5; 
         } else {
             this.slowFactor = 1.0;
-        }
-
-        if (this.distractionPauseTimer > 0) {
-            this.distractionPauseTimer -= deltaTime;
-            this.slowFactor = 0; // Complete stop
         }
 
         if (this.slowTimer > 0) {
@@ -103,10 +98,11 @@ export class Enemy {
             this.x = this.nodes[nextNodeIndex].x;
             this.y = this.nodes[nextNodeIndex].y;
 
-            // If we just reached the honeypot node, pause
+            // If we just reached the honeypot node:
+            // User requested NO stopping/pausing at the honeypot node.
             if (nextNodeIndex === this.attractedToNode) {
-                this.distractionPauseTimer = 1000; // 1 second stun at honeypot
-                console.log(`[Honeypot] Enemy ${this.type} reached distraction point, pausing...`);
+                // this.distractionPauseTimer = 1000; // Removed stopping
+                console.log(`[Honeypot] Enemy ${this.type} passed through honeypot node ${this.attractedToNode}`);
 
                 // Mark this honeypot as processed so we don't get attracted again
                 this.processedHoneypots.add(this.attractedToNode);
@@ -165,6 +161,11 @@ export class Enemy {
         try {
             // IGNORE if we have already been attracted to this honeypot once
             if (this.processedHoneypots.has(nodeId)) return;
+
+            // IGNORE if we are ALREADY currently attracted to a defined node
+            // This satisfies "go to either of the one... need not mandatorily go to all"
+            // by preventing a second honeypot from hijacking the first's attraction.
+            if (this.attractedToNode !== null && this.attractedToNode !== nodeId) return;
 
             // Only reroute if not already attracted to this node
             // EXCEPTION: If we are currently AT the honeypot node (prevNode == nodeId) and moving away,

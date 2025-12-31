@@ -448,11 +448,12 @@ export class LevelManagerStackelberg extends LevelManager {
 
         // Specific tower placements
         if (numChokepoints > 0) {
-            strategy += "• Place Firewalls at chokepoint nodes: " + this.chokepoints.slice(0, 3).join(', ') + "\n";
-            strategy += "  (These bottleneck points maximize coverage against multiple paths)\n\n";
+            strategy += "• Recommended Mix: 2 Firewalls, 1 IDS, 1 Honeypot (Total: 880 credits)\n";
+            strategy += "  (This balanced setup is more cost-effective than 3 Firewalls)\n\n";
+            strategy += "• Place Firewalls at key chokepoints: " + this.chokepoints.slice(0, 2).join(', ') + "\n";
+            strategy += "  (Secure the most critical bottlenecks first)\n\n";
         } else {
             strategy += "• Place Firewalls at central nodes: " + Math.floor(this.nodes.length / 2) + ", " + (Math.floor(this.nodes.length / 2) + 1) + "\n";
-            strategy += "  (No natural chokepoints, so cover main routing points)\n\n";
         }
 
         strategy += "• Place IDS towers at nodes: " + (this.sources[0] + 1) + ", " + (this.goals[0] - 1) + "\n";
@@ -462,7 +463,7 @@ export class LevelManagerStackelberg extends LevelManager {
         strategy += "  (Distract enemies and create decoys near entry/exit points)\n\n";
 
         strategy += "Reasoning: " + (hasMultiplePaths ?
-            "This " + numPaths + "-path topology requires strategic bottlenecks at " + numChokepoints + " chokepoints to maximize efficiency." :
+            "This " + numPaths + "-path topology requires a mixed approach. A pure Firewall strategy is expensive and lacks utility vs variety." :
             "This " + numPaths + "-path layout allows focused defense at key junctions.");
 
         return strategy;

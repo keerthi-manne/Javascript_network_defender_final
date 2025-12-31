@@ -67,6 +67,10 @@ export class TutorialState {
         this.updateHUD();
         this.updateTowerMenu();
 
+        // Show overlay
+        const overlay = document.getElementById('tutorial-overlay');
+        if (overlay) overlay.classList.remove('hidden');
+
         this.showCurrentStep();
     }
 
@@ -74,6 +78,10 @@ export class TutorialState {
         console.log('Exiting Tutorial State');
         eventBus.off('canvasClick', this.onCanvasClick);
         eventBus.off('canvasMouseMove', this.onCanvasMouseMove);
+
+        // Hide overlay
+        const overlay = document.getElementById('tutorial-overlay');
+        if (overlay) overlay.classList.add('hidden');
     }
 
     update(deltaTime) {
@@ -117,8 +125,41 @@ export class TutorialState {
 
         this.levelManager.checkWinCondition();
 
+        // Check for defeat
+        if (this.levelManager.levelFailed) {
+            this.handleCoreBreach();
+            return;
+        }
+
         // Update HUD every frame
         this.updateHUD();
+    }
+
+    handleCoreBreach() {
+        if (this.coreBreachTriggered) return;
+        this.coreBreachTriggered = true;
+
+        // Show failure message using overlay
+        const titleEl = document.getElementById('tutorial-title');
+        const contentEl = document.getElementById('tutorial-content');
+        const hintEl = document.getElementById('tutorial-hint');
+        const dotsEl = document.getElementById('tutorial-dots');
+
+        if (titleEl) {
+            titleEl.textContent = "CORE BREACHED!";
+            titleEl.style.color = Config.COLORS.NODE_GOAL; // Red color
+        }
+        if (contentEl) contentEl.textContent = "Malicious packets have compromised the system. Defense failed.";
+        if (hintEl) {
+            hintEl.textContent = "System rebooting...";
+            document.querySelector('.hint-icon').textContent = '⚠️';
+        }
+        if (dotsEl) dotsEl.innerHTML = ''; // Clear progress dots
+
+        // Restart tutorial after delay
+        setTimeout(() => {
+            window.location.reload();
+        }, 4000);
     }
 
     updateHUD() {
@@ -181,7 +222,27 @@ export class TutorialState {
 
     showCurrentStep() {
         const step = this.steps[this.currentStep];
-        eventBus.emit('aiTip', `TUTORIAL: ${step.message}`);
+
+        // Update DOM
+        const titleEl = document.getElementById('tutorial-title');
+        const contentEl = document.getElementById('tutorial-content');
+        const hintEl = document.getElementById('tutorial-hint');
+        const dotsEl = document.getElementById('tutorial-dots');
+
+        if (titleEl) titleEl.textContent = step.title;
+        if (contentEl) contentEl.textContent = step.message;
+        if (hintEl) hintEl.textContent = step.hint;
+
+        // Update dots
+        if (dotsEl) {
+            dotsEl.innerHTML = '';
+            this.steps.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.className = `dot ${index === this.currentStep ? 'active' : ''}`;
+                dotsEl.appendChild(dot);
+            });
+        }
+
         console.log(`Tutorial Step ${this.currentStep}: ${step.title}`);
     }
 
@@ -203,42 +264,6 @@ export class TutorialState {
         if (this.selectedTowerType && this.hoveredNode !== null) {
             this.renderPlacementPreview(ctx);
         }
-
-        // Render step info
-        if (this.currentStep < this.steps.length) {
-            this.renderOverlay(ctx);
-        }
-    }
-
-    renderOverlay(ctx) {
-        const step = this.steps[this.currentStep];
-        ctx.save();
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(20, 20, 400, 100);
-        ctx.strokeStyle = '#4c9eff';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(20, 20, 400, 100);
-
-        ctx.fillStyle = '#4c9eff';
-        ctx.font = 'bold 18px Inter';
-        ctx.fillText(step.title, 40, 50);
-
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '14px Inter';
-        const words = step.hint.split(' ');
-        let line = '';
-        let y = 80;
-        for (const word of words) {
-            if (ctx.measureText(line + word).width > 360) {
-                ctx.fillText(line, 40, y);
-                line = word + ' ';
-                y += 20;
-            } else {
-                line += word + ' ';
-            }
-        }
-        ctx.fillText(line, 40, y);
-        ctx.restore();
     }
 
     renderNetwork(ctx) {

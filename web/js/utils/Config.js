@@ -28,7 +28,7 @@ export const Config = {
         },
         HARD: {
             moneyMultiplier: 0.75,
-            healthMultiplier: 0.75,
+            healthMultiplier: 1.0,
             enemySpeedMultiplier: 1.3,
             enemyHealthMultiplier: 1.5
         }
@@ -49,7 +49,7 @@ export const Config = {
             projectileColor: '#50aaff'
         },
         IDS: {
-            cost: 200,
+            cost: 140,
             damage: 4,
             range: 150,
             cooldown: 500,
@@ -63,7 +63,7 @@ export const Config = {
             projectileColor: '#ffc832'
         },
         Honeypot: {
-            cost: 150,
+            cost: 140,
             damage: 1, // Minimal damage - honeypot analyzes threats slowly
             range: 250, // Larger range to attract more enemies
             cooldown: 200, // Frequent pulses for continuous attraction
@@ -166,7 +166,7 @@ export const Config = {
             mode: 'ENDLESS',
             startingMoney: 1200,
             coreHealth: 100,
-            waves: 10,
+            waves: 2,
             spawnInterval: 1200, // Faster waves
             towersAvailable: ['Firewall', 'IDS', 'Honeypot'],
             towerLimit: 12,
@@ -184,7 +184,7 @@ export const Config = {
             description: 'Fixed defense vs perfect counter-attack',
             concept: 'Stackelberg Equilibrium',
             mode: 'PERFECT_AI',
-            startingMoney: 800,
+            startingMoney: 1200,
             coreHealth: 100,
             towersAvailable: ['Firewall', 'IDS', 'Honeypot'],
             towerLimit: 8,
@@ -284,13 +284,13 @@ export const Config = {
             // Keeping distinct generic definition but making it branch slightly
             name: 'basic_branch',
             nodes: [
-                { id: 0, x: 150, y: 350, type: 'source' },
-                { id: 1, x: 300, y: 350, type: 'normal' },
-                { id: 2, x: 450, y: 250, type: 'chokepoint' },
-                { id: 3, x: 450, y: 450, type: 'chokepoint' },
-                { id: 4, x: 600, y: 350, type: 'normal' },
-                { id: 5, x: 750, y: 350, type: 'chokepoint' },
-                { id: 6, x: 900, y: 350, type: 'goal' }
+                { id: 0, x: 225, y: 350, type: 'source' },
+                { id: 1, x: 375, y: 350, type: 'normal' },
+                { id: 2, x: 525, y: 250, type: 'chokepoint' },
+                { id: 3, x: 525, y: 450, type: 'chokepoint' },
+                { id: 4, x: 675, y: 350, type: 'normal' },
+                { id: 5, x: 825, y: 350, type: 'chokepoint' },
+                { id: 6, x: 975, y: 350, type: 'goal' }
             ],
             edges: [
                 [0, 1], [1, 2], [1, 3], [2, 4], [3, 4], [4, 5], [5, 6]
@@ -302,16 +302,16 @@ export const Config = {
         adaptive1: {
             name: 'Branching Network',
             nodes: [
-                { id: 0, x: 100, y: 350, type: 'source' },
-                { id: 1, x: 250, y: 200, type: 'normal' },
-                { id: 2, x: 250, y: 500, type: 'normal' },
-                { id: 3, x: 400, y: 150, type: 'normal' },
-                { id: 4, x: 400, y: 350, type: 'normal' },
-                { id: 5, x: 400, y: 550, type: 'normal' },
-                { id: 6, x: 550, y: 200, type: 'normal' },
-                { id: 7, x: 550, y: 500, type: 'normal' },
-                { id: 8, x: 700, y: 350, type: 'normal' },
-                { id: 9, x: 850, y: 350, type: 'goal' }
+                { id: 0, x: 225, y: 350, type: 'source' },
+                { id: 1, x: 375, y: 200, type: 'normal' },
+                { id: 2, x: 375, y: 500, type: 'normal' },
+                { id: 3, x: 525, y: 150, type: 'normal' },
+                { id: 4, x: 525, y: 350, type: 'normal' },
+                { id: 5, x: 525, y: 550, type: 'normal' },
+                { id: 6, x: 675, y: 200, type: 'normal' },
+                { id: 7, x: 675, y: 500, type: 'normal' },
+                { id: 8, x: 825, y: 350, type: 'normal' },
+                { id: 9, x: 975, y: 350, type: 'goal' }
             ],
             edges: [
                 [0, 1], [0, 2], [1, 3], [1, 4], [2, 4], [2, 5],
@@ -374,19 +374,19 @@ export const Config = {
         stackelberg_mesh: {
             name: 'Stackelberg Mesh',
             nodes: [
-                { id: 0, x: 100, y: 350, type: 'source' },
+                { id: 0, x: 300, y: 350, type: 'source' },
                 // Upper path
-                { id: 1, x: 300, y: 150, type: 'chokepoint' },
-                { id: 2, x: 500, y: 150, type: 'normal' },
-                { id: 3, x: 700, y: 150, type: 'chokepoint' },
+                { id: 1, x: 450, y: 200, type: 'chokepoint' },
+                { id: 2, x: 600, y: 200, type: 'normal' },
+                { id: 3, x: 750, y: 200, type: 'chokepoint' },
                 // Middle path
-                { id: 4, x: 300, y: 350, type: 'normal' },
-                { id: 5, x: 500, y: 350, type: 'chokepoint' },
-                { id: 6, x: 700, y: 350, type: 'normal' },
+                { id: 4, x: 450, y: 350, type: 'normal' },
+                { id: 5, x: 600, y: 350, type: 'chokepoint' },
+                { id: 6, x: 750, y: 350, type: 'normal' },
                 // Lower path
-                { id: 7, x: 300, y: 550, type: 'chokepoint' },
-                { id: 8, x: 500, y: 550, type: 'normal' },
-                { id: 9, x: 700, y: 550, type: 'chokepoint' },
+                { id: 7, x: 450, y: 500, type: 'chokepoint' },
+                { id: 8, x: 600, y: 500, type: 'normal' },
+                { id: 9, x: 750, y: 500, type: 'chokepoint' },
                 // Goal
                 { id: 10, x: 900, y: 350, type: 'goal' }
             ],

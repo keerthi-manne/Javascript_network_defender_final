@@ -34,25 +34,29 @@ export class GameEngine {
         // Get container dimensions
         const container = this.canvas.parentElement;
         const containerRect = container.getBoundingClientRect();
-        
+
         // Design dimensions (from Config)
         const designWidth = 1200;
         const designHeight = 700;
         const aspectRatio = designWidth / designHeight;
-        
-        // Calculate available space (accounting for sidebars ~520px total width, top bar ~80px height)
-        // Left sidebar: 220px + 20px margin = 240px, Right sidebar: 240px + 20px margin = 260px
-        const sidebarWidth = 260 + 260; // Both sidebars with margins
-        const topBarHeight = 80;
-        const bottomMargin = 20;
-        const availableWidth = containerRect.width - sidebarWidth;
-        const availableHeight = containerRect.height - topBarHeight - bottomMargin;
-        
+
+        // Calculate available space dynamically from computed styles
+        // This ensures that if we change CSS padding, the canvas automatically adapts
+        const computedStyle = window.getComputedStyle(container);
+        const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
+        const paddingRight = parseFloat(computedStyle.paddingRight) || 0;
+        const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+        const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
+
+        // Available space is the content box of the container
+        const availableWidth = containerRect.width - paddingLeft - paddingRight;
+        const availableHeight = containerRect.height - paddingTop - paddingBottom;
+
         // Calculate scale to fit available space while maintaining aspect ratio
         const scaleX = availableWidth / designWidth;
         const scaleY = availableHeight / designHeight;
         const scale = Math.min(scaleX, scaleY, 1); // Don't scale up beyond design size
-        
+
         // Calculate display dimensions
         const displayWidth = Math.floor(designWidth * scale);
         const displayHeight = Math.floor(designHeight * scale);
@@ -122,7 +126,7 @@ export class GameEngine {
         const rect = this.canvas.getBoundingClientRect();
         let x = event.clientX - rect.left;
         let y = event.clientY - rect.top;
-        
+
         // Convert to design coordinates (1200x700 space)
         const designWidth = 1200;
         const designHeight = 700;
@@ -139,7 +143,7 @@ export class GameEngine {
         const rect = this.canvas.getBoundingClientRect();
         let x = event.clientX - rect.left;
         let y = event.clientY - rect.top;
-        
+
         // Convert to design coordinates (1200x700 space)
         const designWidth = 1200;
         const designHeight = 700;
@@ -245,7 +249,7 @@ export class GameEngine {
 
         // Save context state
         this.ctx.save();
-        
+
         // Scale context to match design dimensions (1200x700)
         // This ensures node positions work correctly regardless of actual canvas size
         const designWidth = 1200;
@@ -256,7 +260,7 @@ export class GameEngine {
 
         // Render current state (coordinates will be in design space: 1200x700)
         this.stateManager.render(this.ctx);
-        
+
         // Restore context state
         this.ctx.restore();
     }
